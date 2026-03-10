@@ -256,13 +256,14 @@ def generate_html_dashboard(agencies_data, last_updated=None):
         }}
         
         .country-content {{
-            max-height: 100vh;
-            overflow: hidden;
+            max-height: 10000px;  /* Large value to allow full expansion */
+            overflow: auto;  /* Enable scrolling when content exceeds height */
             transition: max-height 0.3s ease;
         }}
         
         .country-content.collapsed {{
             max-height: 0;
+            overflow: hidden;
         }}
         
         .state-group {{
@@ -481,7 +482,7 @@ def gen_results_html(agencies_data):
         
         html += f"""
         <div class="country-section">
-            <div class="country-header" onclick="toggleCountry(this)">
+            <div class="country-header">
                 <span>{country}</span>
                 <span class="toggle">▼</span>
             </div>

@@ -167,13 +167,14 @@
         }
         
         .country-content {
-            max-height: 100vh;
-            overflow: hidden;
+            max-height: 10000px;  /* Large value to allow full expansion */
+            overflow: auto;  /* Enable scrolling when content exceeds height */
             transition: max-height 0.3s ease;
         }
         
         .country-content.collapsed {
             max-height: 0;
+            overflow: hidden;
         }
         
         .state-group {
@@ -249,7 +250,7 @@
         <header>
             <h1>🚌 Transit App Royale Agencies</h1>
             <p>Interactive directory of transit agencies providing free Royale subscriptions</p>
-            <p class="last-updated">Last updated: 2026-03-10 10:00:41</p>
+            <p class="last-updated">Last updated: 2026-03-10 10:07:43</p>
         </header>
         
         <div class="stats">
@@ -279,7 +280,7 @@
         <div class="results" id="results">
             
         <div class="country-section">
-            <div class="country-header" onclick="toggleCountry(this)">
+            <div class="country-header">
                 <span>Canada</span>
                 <span class="toggle">▼</span>
             </div>
@@ -351,7 +352,7 @@
         </div>
 
         <div class="country-section">
-            <div class="country-header" onclick="toggleCountry(this)">
+            <div class="country-header">
                 <span>United States</span>
                 <span class="toggle">▼</span>
             </div>
@@ -751,7 +752,7 @@
         
         <div class="footer">
             <p>Data source: <a href="https://help.transitapp.com/article/436-transit-agencies-gifting-royale-to-their-riders" style="color: white; text-decoration: underline;">Transit App Help Center</a></p>
-            <p>Last scraped: 2026-03-10 10:00:43</p>
+            <p>Last scraped: 2026-03-10 10:10:43</p>
         </div>
     </div>
     

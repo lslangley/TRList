@@ -13,10 +13,19 @@ from pathlib import Path
 
 # Configuration
 SCRAPE_URL = "https://help.transitapp.com/article/436-transit-agencies-gifting-royale-to-their-riders"
-SCRIPT_DIR = Path(__file__).parent
-CSV_FILE = SCRIPT_DIR / "transit_agencies.csv"
-JSON_FILE = SCRIPT_DIR / "transit_agencies.json"
-LOG_FILE = SCRIPT_DIR / "scrape_log.txt"
+
+# Define directories relative to the project root
+BASE_DIR = Path(__file__).parent.parent
+DATA_DIR = BASE_DIR / "data"
+LOGS_DIR = BASE_DIR / "logs"
+
+# make sure output folders exist
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+LOGS_DIR.mkdir(parents=True, exist_ok=True)
+
+CSV_FILE = DATA_DIR / "transit_agencies.csv"
+JSON_FILE = DATA_DIR / "transit_agencies.json"
+LOG_FILE = LOGS_DIR / "scrape_log.txt"
 
 def log_message(message):
     """Log messages to both console and log file"""

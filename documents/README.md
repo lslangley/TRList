@@ -13,16 +13,22 @@ An automated Python system that scrapes the Transit App Royale transit agencies 
 ## Project Structure
 
 ```
-Transit_Royal/
-├── scraper.py           # Main web scraper script
-├── scheduler.py         # Scheduler for automatic runs
-├── dashboard.py         # Dashboard generator
-├── requirements.txt     # Python dependencies
-├── transit_agencies.csv # Generated transit agencies data
-├── transit_agencies.json # Raw JSON data
-├── index.html          # Interactive HTML dashboard
-├── scrape_log.txt      # Scraper execution log
-└── scheduler_log.txt   # Scheduler execution log
+TRList/                         # repository root
+├── scripts/                   # all executable scripts
+│   ├── scraper.py             # Main web scraper
+│   ├── scheduler.py           # Scheduler for automatic runs
+│   ├── dashboard.py           # Dashboard generator
+│   ├── run.py                 # Utility wrapper (scrape, dashboard, schedule)
+│   ├── create_sample_data.py  # helper for generating fake data
+│   ├── test_system.py         # simple sanity‑check tests
+│   ├── *.ps1, *.bat           # setup helpers for Windows
+│   └── …                      # other scripts
+├── documents/                # markdown documentation, guides, notes
+├── data/                     # generated outputs (CSV, JSON, HTML, etc.)
+├── logs/                     # runtime log files
+├── config.ini                # configuration settings
+├── requirements.txt          # Python dependencies
+└── .gitignore                # version control ignore rules
 ```
 
 ## Installation
@@ -37,7 +43,7 @@ Transit_Royal/
 
 ```bash
 # Navigate to the project directory
-cd "c:\Users\leslie.langley\OneDrive - Transpo Group\Repos\Transit_Royal"
+cd "c:\Users\leslie.langley\OneDrive - Transpo Group\Repos\TRList"
 
 # Install required packages
 pip install -r requirements.txt
@@ -46,6 +52,7 @@ pip install -r requirements.txt
 ### Step 2: Run the Scraper Manually (First Time)
 
 ```bash
+cd scripts
 python scraper.py
 ```
 
@@ -58,10 +65,11 @@ This will:
 ### Step 3: Generate the Dashboard
 
 ```bash
+cd scripts
 python dashboard.py
 ```
 
-This will create `index.html` - open it in a web browser to view the interactive dashboard.
+This will create `index.html` at the repository root - open it in a web browser to view the interactive dashboard.
 
 ## Setting Up Automatic Scheduling
 
@@ -137,7 +145,7 @@ python dashboard.py
 ```
 
 ### 3. View the Dashboard
-Open `index.html` in your web browser. The dashboard features:
+Open `index.html` (at the project root) in your web browser. The dashboard features:
 - Search bar for filtering agencies
 - Country/Region dropdown filter
 - Statistics panel showing total agencies and regions

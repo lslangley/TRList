@@ -1,14 +1,12 @@
 # .gitignore - Files to exclude from git version control
 
 # Generated data files
-transit_agencies.csv
-transit_agencies.json
-index.html
+/data/
+# CSV, JSON, HTML outputs are stored in data/
 
 # Log files
+/logs/
 *.log
-scrape_log.txt
-scheduler_log.txt
 
 # Python
 __pycache__/

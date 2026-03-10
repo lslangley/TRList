@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transit App Royale Agencies</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        header p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .last-updated {
+            color: #999;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: #999;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .number {
+            color: #667eea;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .search-box input,
+        .search-box select {
+            padding: 10px 15px;
+            border: 2px solid #eee;
+            border-radius: 5px;
+            font-size: 1em;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .search-box input:focus,
+        .search-box select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-box button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .search-box button:hover {
+            background: #764ba2;
+        }
+        
+        .results {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .country-section {
+            border-bottom: 1px solid #eee;
+        }
+        
+        .country-section:last-child {
+            border-bottom: none;
+        }
+        
+        .country-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            user-select: none;
+            transition: background 0.3s;
+        }
+        
+        .country-header:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #653a8a 100%);
+        }
+        
+        .country-header .toggle {
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+        
+        .country-header.collapsed .toggle {
+            transform: rotate(-90deg);
+        }
+        
+        .country-content {
+            max-height: 100vh;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .country-content.collapsed {
+            max-height: 0;
+        }
+        
+        .state-group {
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            margin: 0;
+            background: #fafafa;
+        }
+        
+        .state-group:nth-child(even) {
+            background: white;
+        }
+        
+        .state-header {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .agencies-list {
+            list-style: none;
+        }
+        
+        .agencies-list li {
+            padding: 8px 0;
+            padding-left: 20px;
+            color: #333;
+            border-left: 2px solid #ddd;
+            padding-left: 15px;
+        }
+        
+        .agencies-list li:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-left-color: #667eea;
+        }
+        
+        .no-results {
+            padding: 40px 20px;
+            text-align: center;
+            color: #999;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-box input,
+            .search-box select {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚌 Transit App Royale Agencies</h1>
+            <p>Interactive directory of transit agencies providing free Royale subscriptions</p>
+            <p class="last-updated">Last updated: 2026-03-10 10:00:41</p>
+        </header>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Agencies</h3>
+                <div class="number">155</div>
+            </div>
+            <div class="stat-card">
+                <h3>Countries/Regions</h3>
+                <div class="number">2</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search agencies, cities, or states...">
+                <select id="countryFilter">
+                    <option value="">All Countries/Regions</option>
+                    <option value="Canada">Canada</option>
+<option value="United States">United States</option>
+
+                </select>
+                <button onclick="clearSearch()">Clear</button>
+            </div>
+        </div>
+        
+        <div class="results" id="results">
+            
+        <div class="country-section">
+            <div class="country-header" onclick="toggleCountry(this)">
+                <span>Canada</span>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="country-content">
+
+                <div class="state-group">
+                    <div class="state-header">Alberta</div>
+                    <ul class="agencies-list">
+                        <li>Airdrie, AB - Airdrie Transit</li>
+                        <li>Banff, AB – Roam Transit</li>
+                        <li>Calgary, AB – Calgary Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">New Brunswick</div>
+                    <ul class="agencies-list">
+                        <li>Saint John, NB – Saint John Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Nova Scotia</div>
+                    <ul class="agencies-list">
+                        <li>Cape Breton, NS – Transit Cape Breton</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Ontario</div>
+                    <ul class="agencies-list">
+                        <li>Belleville, ON – Belleville Transit</li>
+                        <li>Brantford, ON – Brantford Transit</li>
+                        <li>Cornwall, ON – Cornwall Transit</li>
+                        <li>Guelph, ON – Guelph Transit</li>
+                        <li>Kingston, ON – Kingston Transit</li>
+                        <li>Milton, ON – Milton Transit</li>
+                        <li>Niagara, ON – Niagara Regional Transit</li>
+                        <li>Ottawa, ON – OC Transpo</li>
+                        <li>Thunder Bay, ON – Thunder Bay Transit</li>
+                        <li>Timmins, ON - Timmins Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Quebec</div>
+                    <ul class="agencies-list">
+                        <li>Lévis, QC – Société de transport de Lévis (STLévis)</li>
+                        <li>Rimouski, QC – Société des transports de Rimouski</li>
+                        <li>Saguenay, QC – Société de transport du Saguenay (STS)</li>
+                        <li>Trois-Rivières, QC – Société de transport de Trois-Rivières (STTR)</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Saskatchewan</div>
+                    <ul class="agencies-list">
+                        <li>Saskatoon, SK – Saskatoon Transit</li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="country-section">
+            <div class="country-header" onclick="toggleCountry(this)">
+                <span>United States</span>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="country-content">
+
+                <div class="state-group">
+                    <div class="state-header">Alaska</div>
+                    <ul class="agencies-list">
+                        <li>Anchorage, AK – People Mover</li>
+                        <li>Ketchikan, AK – Ketchikan Gateway Borough</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Arizona</div>
+                    <ul class="agencies-list">
+                        <li>Flagstaff, AZ – Mountain Line</li>
+                        <li>Tuscon, AZ - Sun Tran</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Arkansas</div>
+                    <ul class="agencies-list">
+                        <li>Little Rock, AR – Rock Region METRO</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">California</div>
+                    <ul class="agencies-list">
+                        <li>Bakersfield, CA – Golden Empire Transit District / GET Bus</li>
+                        <li>Bakersfield, CA – Kern Transit</li>
+                        <li>Berkeley, CA – Bear Transit (University of California, Berkeley)</li>
+                        <li>Coachella Valley, CA – SunLine Transit</li>
+                        <li>Fairfield, CA – FAST Fairfield and Suisun Transit</li>
+                        <li>Modesto, CA – The S</li>
+                        <li>Monterey, CA – Monterey-Salinas Transit</li>
+                        <li>Orange County, CA – OC Bus (Orange County Transportation Authority)</li>
+                        <li>Pasadena, CA – Pasadena Transit</li>
+                        <li>Petaluma, CA – Petaluma Transit</li>
+                        <li>San Bernardino, CA – Omnitrans</li>
+                        <li>Santa Clara, CA – VTA (Santa Clara Valley Transportation Authority)</li>
+                        <li>Santa Cruz, CA – Santa Cruz METRO</li>
+                        <li>Santa Rosa, CA – Santa Rosa CityBus</li>
+                        <li>Solano County, CA – SolTrans</li>
+                        <li>Sonoma County, CA – Sonoma County Transit</li>
+                        <li>Torrance, CA – Torrance Transit</li>
+                        <li>Turlock, CA – Turlock Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Colorado</div>
+                    <ul class="agencies-list">
+                        <li>Aspen, CO – Snowmass Village Shuttle</li>
+                        <li>Breckenridge, CO – Breck Free Ride</li>
+                        <li>Summit County, CO – Summit Stage</li>
+                        <li>Telluride, CO – SMART</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Connecticut</div>
+                    <ul class="agencies-list">
+                        <li>Bridgeport, CT – Greater Bridgeport Transit</li>
+                        <li>Hartford, CT – Amtrak (Hartford Line)</li>
+                        <li>Hartford, CT – CTTransit Hartford</li>
+                        <li>Hartford, CT – Hartford Line</li>
+                        <li>Mansfield, CT – Windham Region Transit District</li>
+                        <li>Meriden, CT – CTTransit Meriden</li>
+                        <li>Middletown, CT – Middletown Transit District</li>
+                        <li>Milford, CT – Milford Transit District</li>
+                        <li>New Britain, CT – CTTransit New Britain</li>
+                        <li>New Haven, CT – CTTransit New Haven</li>
+                        <li>New Haven, CT – Metro North (New Haven Line)</li>
+                        <li>Northeastern CT, CT – Northeastern Connecticut Transit District</li>
+                        <li>Norwalk, CT – Norwalk Transit District</li>
+                        <li>Stamford, CT – CTTransit Stamford</li>
+                        <li>Waterbury, CT – CTTransit Waterbury</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Florida</div>
+                    <ul class="agencies-list">
+                        <li>Miami, FL – Miami Beach Trolleys</li>
+                        <li>Naples, FL – Collier Area Transit</li>
+                        <li>Orlando, FL - LYNX</li>
+                        <li>Pinellas County, FL – PSTA (Pinellas Suncoast Transit Authority)</li>
+                        <li>Tampa, FL – Hillsborough Transit Authority</li>
+                        <li>West Palm Beach, FL – Palm Tran (sponsored by WBPgo)</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Hawaii</div>
+                    <ul class="agencies-list">
+                        <li>Honolulu, HI – TheBus</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Illinois</div>
+                    <ul class="agencies-list">
+                        <li>Champaign-Urbana, IL – Champaign-Urbana Mass Transit District</li>
+                        <li>Cook County, IL – Pace</li>
+                        <li>Rock Island, IL – MetroLINK (Quad Cities)</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Iowa</div>
+                    <ul class="agencies-list">
+                        <li>Ames, IA – CyRide</li>
+                        <li>Iowa City, IA – CAMBUS</li>
+                        <li>Iowa City, IA – Iowa City Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Kansas</div>
+                    <ul class="agencies-list">
+                        <li>Johnson County, KS – Johnson County Transit</li>
+                        <li>Lawrence, KS – Lawrence Transit</li>
+                        <li>Manhattan, KS – ATA Bus</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Kentucky</div>
+                    <ul class="agencies-list">
+                        <li>Lexington, KY – University of Kentucky</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Louisiana</div>
+                    <ul class="agencies-list">
+                        <li>New Orleans, LA – New Orleans RTA</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Maryland</div>
+                    <ul class="agencies-list">
+                        <li>Baltimore County, MD – University of Maryland (UMBC)</li>
+                        <li>Baltimore, MD – Maryland Transit Administration</li>
+                        <li>Central Maryland, MD – RTA of Central Maryland</li>
+                        <li>College Park, MD – University of Maryland (UMD)</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Massachusetts</div>
+                    <ul class="agencies-list">
+                        <li>Attleboro and Taunton, MA – Greater Attleboro Taunton Regional Transit Authority</li>
+                        <li>Lowell, MA – Lowell RTA</li>
+                        <li>Springfield, MA – PVTA (Pioneer Valley Transit Authority)</li>
+                        <li>Worcester, MA – WRTA</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Michigan</div>
+                    <ul class="agencies-list">
+                        <li>Ann Arbor, MI – The Ride</li>
+                        <li>Grand Rapids, MI – The Rapid</li>
+                        <li>Lansing, MI – CATA (Capital Area Transportation Authority)</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Minnesota</div>
+                    <ul class="agencies-list">
+                        <li>Alexandria, MN – Rainbow Rider Transit</li>
+                        <li>Austin, MN – Southern Minnesota Area Rural Transit</li>
+                        <li>Brown County, MN – Brown County Heartland Express</li>
+                        <li>Duluth, MN – Duluth Transit Authority</li>
+                        <li>Fergus Falls, MN – Otter Express</li>
+                        <li>Mankato, MN – Mankato Transit System</li>
+                        <li>Mankato, MN – Minnesota River Valley Transit</li>
+                        <li>Mankato, MN – TRUE Transit</li>
+                        <li>Marshall, MN – United Community Transit</li>
+                        <li>Minneapolis, MN – Metro Transit</li>
+                        <li>Montevideo, MN – Prairie Five Rides</li>
+                        <li>Rochester, MN – Rolling Hills Transit</li>
+                        <li>Waite Park, MN – Tri-Cap Transit Connection</li>
+                        <li>Wilmar, MN – Central Community Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Mississippi</div>
+                    <ul class="agencies-list">
+                        <li>Jackson, MS – Jackson Transit (JTRAN)</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Missouri</div>
+                    <ul class="agencies-list">
+                        <li>Kansas City, MO – RideKC (Kansas City Area Transportation Authority)</li>
+                        <li>St. Louis, MO – Metro Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Montana</div>
+                    <ul class="agencies-list">
+                        <li>Missoula, MT – Mountain Line</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Nevada</div>
+                    <ul class="agencies-list">
+                        <li>Las Vegas, NV – RTC Nevada</li>
+                        <li>Washoe County, NV – RTC Washoe</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">New Mexico</div>
+                    <ul class="agencies-list">
+                        <li>Albuquerque, NM – ABQ RIDE</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">New York</div>
+                    <ul class="agencies-list">
+                        <li>Lewis County, NY – Lewis County Transit</li>
+                        <li>Suffolk County, NY – Suffolk County Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">North Carolina</div>
+                    <ul class="agencies-list">
+                        <li>Durham, NC – GoDurham</li>
+                        <li>Raleigh, NC – Chapel Hill Transit</li>
+                        <li>Raleigh, NC – GoRaleigh</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Ohio</div>
+                    <ul class="agencies-list">
+                        <li>Akron, OH – Akron Metro</li>
+                        <li>Cincinnati, OH – SORTA</li>
+                        <li>Cincinnati, OH – TANK</li>
+                        <li>Cleveland, OH – GCRTA (Greater Cleveland Regional Transit Authority)</li>
+                        <li>Cleveland, OH – Laketran</li>
+                        <li>Columbus, OH – COTA (Central Ohio Transit Authority)</li>
+                        <li>Dayton, OH – Greater Dayton RTA</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Oregon</div>
+                    <ul class="agencies-list">
+                        <li>Albany, OR – Albany Transit System</li>
+                        <li>Benton County, OR – Benton Area Transit</li>
+                        <li>Corvallis, OR – Corvallis Transit System</li>
+                        <li>Eugene, OR – Lane Transit District</li>
+                        <li>Lincoln County, OR – Lincoln County Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">South Carolina</div>
+                    <ul class="agencies-list">
+                        <li>Charleston, SC – CARTA (Charleston Area Regional Transportation Authority)</li>
+                        <li>Charleston, SC – Tri-County Link</li>
+                        <li>Greenville, SC – Greenlink</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Tennessee</div>
+                    <ul class="agencies-list">
+                        <li>Knoxville, TN – Knoxville Area Transit</li>
+                        <li>Nashville, TN – WeGo Public Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Texas</div>
+                    <ul class="agencies-list">
+                        <li>Austin, TX – CARTS</li>
+                        <li>Austin, TX – CapMetro</li>
+                        <li>Denton County, TX – DCTA</li>
+                        <li>Laredo, TX – El Metro</li>
+                        <li>San Antonio, TX – VIA Metropolitan Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Utah</div>
+                    <ul class="agencies-list">
+                        <li>Park City, UT – Park City Transit</li>
+                        <li>Salt Lake City, UT – UTA</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Vermont</div>
+                    <ul class="agencies-list">
+                        <li>Burlington, VT – Green Mountain Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Virginia</div>
+                    <ul class="agencies-list">
+                        <li>Loudoun County, VA – Loudoun County Transit</li>
+                        <li>Lynchburg, VA – Greater Lynchburg Transit Company</li>
+                        <li>Richmond, VA – GRTC (Greater Richmond Transit Company)</li>
+                        <li>Williamsburg, VA – Williamsburg Area Transit Authority</li>
+                        <li>Woodbridge, VA – OmniRide (Northern Virginia)</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Washington</div>
+                    <ul class="agencies-list">
+                        <li>Pierce County, WA – Pierce Transit</li>
+                        <li>Spokane, WA – Spokane Transit</li>
+                        <li>Tri-Cities, WA – Ben Franklin Transit</li>
+                        <li>Vancouver, WA – C-TRAN</li>
+                        <li>Wenatchee, WA – Link Transit</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">West Virginia</div>
+                    <ul class="agencies-list">
+                        <li>Charleston, WV – KRT (Kanawha Valley Regional Transportation Authority)</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Wisconsin</div>
+                    <ul class="agencies-list">
+                        <li>La Crosse Region, WI – MTU</li>
+
+                    </ul>
+                </div>
+
+                <div class="state-group">
+                    <div class="state-header">Wyoming</div>
+                    <ul class="agencies-list">
+                        <li>Jackson, WY – START</li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        </div>
+        
+        <div class="footer">
+            <p>Data source: <a href="https://help.transitapp.com/article/436-transit-agencies-gifting-royale-to-their-riders" style="color: white; text-decoration: underline;">Transit App Help Center</a></p>
+            <p>Last scraped: 2026-03-10 10:00:43</p>
+        </div>
+    </div>
+    
+    <script>
+        const agenciesData = {"United States": {"Alaska": ["Anchorage, AK \u2013 People Mover", "Ketchikan, AK \u2013 Ketchikan Gateway Borough"], "Arizona": ["Flagstaff, AZ \u2013 Mountain Line", "Tuscon, AZ - Sun Tran"], "Arkansas": ["Little Rock, AR \u2013 Rock Region METRO"], "California": ["Fairfield, CA \u2013 FAST Fairfield and Suisun Transit", "Bakersfield, CA \u2013 Golden Empire Transit District / GET Bus", "Bakersfield, CA \u2013 Kern Transit", "Monterey, CA \u2013 Monterey-Salinas Transit", "San Bernardino, CA \u2013 Omnitrans", "Orange County, CA \u2013 OC Bus (Orange County Transportation Authority)", "Petaluma, CA \u2013 Petaluma Transit", "Pasadena, CA \u2013 Pasadena Transit", "Santa Clara, CA \u2013 VTA (Santa Clara Valley Transportation Authority)", "Santa Cruz, CA \u2013 Santa Cruz METRO", "Santa Rosa, CA \u2013 Santa Rosa CityBus", "Solano County, CA \u2013 SolTrans", "Sonoma County, CA \u2013 Sonoma County Transit", "Coachella Valley, CA \u2013 SunLine Transit", "Modesto, CA \u2013 The S", "Torrance, CA \u2013 Torrance Transit", "Turlock, CA \u2013 Turlock Transit", "Berkeley, CA \u2013 Bear Transit (University of California, Berkeley)"], "Colorado": ["Breckenridge, CO \u2013 Breck Free Ride", "Telluride, CO \u2013 SMART", "Aspen, CO \u2013 Snowmass Village Shuttle", "Summit County, CO \u2013 Summit Stage"], "Connecticut": ["Hartford, CT \u2013 Amtrak (Hartford Line)", "Hartford, CT \u2013 CTTransit Hartford", "Meriden, CT \u2013 CTTransit Meriden", "New Britain, CT \u2013 CTTransit New Britain", "New Haven, CT \u2013 CTTransit New Haven", "Stamford, CT \u2013 CTTransit Stamford", "Waterbury, CT \u2013 CTTransit Waterbury", "Bridgeport, CT \u2013 Greater Bridgeport Transit", "Hartford, CT \u2013 Hartford Line", "New Haven, CT \u2013 Metro North (New Haven Line)", "Middletown, CT \u2013 Middletown Transit District", "Milford, CT \u2013 Milford Transit District", "Norwalk, CT \u2013 Norwalk Transit District", "Northeastern CT, CT \u2013 Northeastern Connecticut Transit District", "Mansfield, CT \u2013 Windham Region Transit District"], "Florida": ["Naples, FL \u2013 Collier Area Transit", "Tampa, FL \u2013 Hillsborough Transit Authority", "Miami, FL \u2013 Miami Beach Trolleys", "West Palm Beach, FL \u2013 Palm Tran (sponsored by WBPgo)", "Pinellas County, FL \u2013 PSTA (Pinellas Suncoast Transit Authority)", "Orlando, FL - LYNX"], "Hawaii": ["Honolulu, HI \u2013 TheBus"], "Illinois": ["Champaign-Urbana, IL \u2013 Champaign-Urbana Mass Transit District", "Rock Island, IL \u2013 MetroLINK (Quad Cities)", "Cook County, IL \u2013 Pace"], "Iowa": ["Iowa City, IA \u2013 CAMBUS", "Iowa City, IA \u2013 Iowa City Transit", "Ames, IA \u2013 CyRide"], "Kansas": ["Lawrence, KS \u2013 Lawrence Transit", "Johnson County, KS \u2013 Johnson County Transit", "Manhattan, KS \u2013 ATA Bus"], "Kentucky": ["Lexington, KY \u2013 University of Kentucky"], "Louisiana": ["New Orleans, LA \u2013 New Orleans RTA"], "Maryland": ["Baltimore, MD \u2013 Maryland Transit Administration", "Central Maryland, MD \u2013 RTA of Central Maryland", "College Park, MD \u2013 University of Maryland (UMD)", "Baltimore County, MD \u2013 University of Maryland (UMBC)"], "Massachusetts": ["Springfield, MA \u2013 PVTA (Pioneer Valley Transit Authority)", "Lowell, MA \u2013 Lowell RTA", "Attleboro and Taunton, MA \u2013 Greater Attleboro Taunton Regional Transit Authority", "Worcester, MA \u2013 WRTA"], "Michigan": ["Ann Arbor, MI \u2013 The Ride", "Lansing, MI \u2013 CATA (Capital Area Transportation Authority)", "Grand Rapids, MI \u2013 The Rapid"], "Minnesota": ["Brown County, MN \u2013 Brown County Heartland Express", "Wilmar, MN \u2013 Central Community Transit", "Duluth, MN \u2013 Duluth Transit Authority", "Mankato, MN \u2013 Mankato Transit System", "Minneapolis, MN \u2013 Metro Transit", "Mankato, MN \u2013 Minnesota River Valley Transit", "Fergus Falls, MN \u2013 Otter Express", "Montevideo, MN \u2013 Prairie Five Rides", "Alexandria, MN \u2013 Rainbow Rider Transit", "Rochester, MN \u2013 Rolling Hills Transit", "Waite Park, MN \u2013 Tri-Cap Transit Connection", "Mankato, MN \u2013 TRUE Transit", "Austin, MN \u2013 Southern Minnesota Area Rural Transit", "Marshall, MN \u2013 United Community Transit"], "Mississippi": ["Jackson, MS \u2013 Jackson Transit (JTRAN)"], "Missouri": ["Kansas City, MO \u2013 RideKC (Kansas City Area Transportation Authority)", "St. Louis, MO \u2013 Metro Transit"], "Montana": ["Missoula, MT \u2013 Mountain Line"], "Nevada": ["Las Vegas, NV \u2013 RTC Nevada", "Washoe County, NV \u2013 RTC Washoe"], "New Mexico": ["Albuquerque, NM \u2013 ABQ RIDE"], "New York": ["Lewis County, NY \u2013 Lewis County Transit", "Suffolk County, NY \u2013 Suffolk County Transit"], "North Carolina": ["Raleigh, NC \u2013 Chapel Hill Transit", "Raleigh, NC \u2013 GoRaleigh", "Durham, NC \u2013 GoDurham"], "Ohio": ["Akron, OH \u2013 Akron Metro", "Columbus, OH \u2013 COTA (Central Ohio Transit Authority)", "Cleveland, OH \u2013 GCRTA (Greater Cleveland Regional Transit Authority)", "Dayton, OH \u2013 Greater Dayton RTA", "Cleveland, OH \u2013 Laketran", "Cincinnati, OH \u2013 SORTA", "Cincinnati, OH \u2013 TANK"], "Oregon": ["Albany, OR \u2013 Albany Transit System", "Benton County, OR \u2013 Benton Area Transit", "Corvallis, OR \u2013 Corvallis Transit System", "Eugene, OR \u2013 Lane Transit District", "Lincoln County, OR \u2013 Lincoln County Transit"], "South Carolina": ["Charleston, SC \u2013 CARTA (Charleston Area Regional Transportation Authority)", "Greenville, SC \u2013 Greenlink", "Charleston, SC \u2013 Tri-County Link"], "Tennessee": ["Knoxville, TN \u2013 Knoxville Area Transit", "Nashville, TN \u2013 WeGo Public Transit"], "Texas": ["San Antonio, TX \u2013 VIA Metropolitan Transit", "Austin, TX \u2013 CapMetro", "Austin, TX \u2013 CARTS", "Denton County, TX \u2013 DCTA", "Laredo, TX \u2013 El Metro"], "Utah": ["Park City, UT \u2013 Park City Transit", "Salt Lake City, UT \u2013 UTA"], "Vermont": ["Burlington, VT \u2013 Green Mountain Transit"], "Virginia": ["Lynchburg, VA \u2013 Greater Lynchburg Transit Company", "Richmond, VA \u2013 GRTC (Greater Richmond Transit Company)", "Loudoun County, VA \u2013 Loudoun County Transit", "Williamsburg, VA \u2013 Williamsburg Area Transit Authority", "Woodbridge, VA \u2013 OmniRide (Northern Virginia)"], "Washington": ["Spokane, WA \u2013 Spokane Transit", "Tri-Cities, WA \u2013 Ben Franklin Transit", "Vancouver, WA \u2013 C-TRAN", "Pierce County, WA \u2013 Pierce Transit", "Wenatchee, WA \u2013 Link Transit"], "West Virginia": ["Charleston, WV \u2013 KRT (Kanawha Valley Regional Transportation Authority)"], "Wisconsin": ["La Crosse Region, WI \u2013 MTU"], "Wyoming": ["Jackson, WY \u2013 START"]}, "Canada": {"Alberta": ["Airdrie, AB - Airdrie Transit", "Banff, AB \u2013 Roam Transit", "Calgary, AB \u2013 Calgary Transit"], "New Brunswick": ["Saint John, NB \u2013 Saint John Transit"], "Nova Scotia": ["Cape Breton, NS \u2013 Transit Cape Breton"], "Ontario": ["Belleville, ON \u2013 Belleville Transit", "Brantford, ON \u2013 Brantford Transit", "Cornwall, ON \u2013 Cornwall Transit", "Guelph, ON \u2013 Guelph Transit", "Kingston, ON \u2013 Kingston Transit", "Milton, ON \u2013 Milton Transit", "Niagara, ON \u2013 Niagara Regional Transit", "Ottawa, ON \u2013 OC Transpo", "Thunder Bay, ON \u2013 Thunder Bay Transit", "Timmins, ON - Timmins Transit"], "Quebec": ["Rimouski, QC \u2013 Soci\u00e9t\u00e9 des transports de Rimouski", "L\u00e9vis, QC \u2013 Soci\u00e9t\u00e9 de transport de L\u00e9vis (STL\u00e9vis)", "Trois-Rivi\u00e8res, QC \u2013 Soci\u00e9t\u00e9 de transport de Trois-Rivi\u00e8res (STTR)", "Saguenay, QC \u2013 Soci\u00e9t\u00e9 de transport du Saguenay (STS)"], "Saskatchewan": ["Saskatoon, SK \u2013 Saskatoon Transit"]}, "International": {}};
+        
+        document.getElementById('searchInput').addEventListener('keyup', filterResults);
+        document.getElementById('countryFilter').addEventListener('change', filterResults);
+        
+        function filterResults() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const countryFilter = document.getElementById('countryFilter').value;
+            
+            const countryElements = document.querySelectorAll('.country-section');
+            let anyVisible = false;
+            
+            countryElements.forEach(section => {
+                const countryName = section.querySelector('.country-header').textContent.trim();
+                const states = section.querySelectorAll('.state-group');
+                let countryVisible = false;
+                
+                // Check country filter
+                if (countryFilter && !countryName.includes(countryFilter)) {
+                    section.style.display = 'none';
+                    return;
+                }
+                
+                section.style.display = 'block';
+                
+                states.forEach(state => {
+                    const stateText = state.querySelector('.state-header').textContent.toLowerCase();
+                    const agencies = state.querySelectorAll('.agencies-list li');
+                    let stateVisible = false;
+                    
+                    agencies.forEach(agency => {
+                        const text = agency.textContent.toLowerCase();
+                        const matches = text.includes(searchTerm) || stateText.includes(searchTerm);
+                        agency.style.display = matches || !searchTerm ? 'block' : 'none';
+                        if (matches || !searchTerm) {
+                            stateVisible = true;
+                        }
+                    });
+                    
+                    state.style.display = stateVisible || !searchTerm ? 'block' : 'none';
+                    if (stateVisible || !searchTerm) {
+                        countryVisible = true;
+                    }
+                });
+                
+                if (countryVisible) {
+                    anyVisible = true;
+                }
+            });
+            
+            const noResults = document.getElementById('noResults');
+            if (!anyVisible && searchTerm) {
+                if (!noResults) {
+                    const div = document.createElement('div');
+                    div.id = 'noResults';
+                    div.className = 'no-results';
+                    div.innerHTML = '<p>No agencies found matching your search.</p>';
+                    document.getElementById('results').appendChild(div);
+                }
+            } else if (noResults) {
+                noResults.remove();
+            }
+        }
+        
+        function toggleCountry(header) {
+            header.classList.toggle('collapsed');
+            const content = header.nextElementSibling;
+            content.classList.toggle('collapsed');
+        }
+        
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('countryFilter').value = '';
+            filterResults();
+        }
+        
+        // Initialize: set up country toggle listeners
+        document.querySelectorAll('.country-header').forEach(header => {
+            header.addEventListener('click', function() {
+                toggleCountry(this);
+            });
+        });
+    </script>
+</body>
+</html>

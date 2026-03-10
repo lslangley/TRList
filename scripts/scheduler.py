@@ -11,9 +11,15 @@ import sys
 from pathlib import Path
 import pytz
 
+# directories
 SCRIPT_DIR = Path(__file__).parent
+BASE_DIR = SCRIPT_DIR.parent
+LOGS_DIR = BASE_DIR / "logs"
 SCRAPER_SCRIPT = SCRIPT_DIR / "scraper.py"
-LOG_FILE = SCRIPT_DIR / "scheduler_log.txt"
+LOG_FILE = LOGS_DIR / "scheduler_log.txt"
+
+# ensure logs folder exists
+LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Pacific Time Zone
 PACIFIC_TZ = pytz.timezone('US/Pacific')

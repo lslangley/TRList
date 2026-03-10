@@ -8,9 +8,13 @@ import csv
 from pathlib import Path
 from datetime import datetime
 
-SCRIPT_DIR = Path(__file__).parent
-JSON_FILE = SCRIPT_DIR / "transit_agencies_sample.json"
-CSV_FILE = SCRIPT_DIR / "transit_agencies_sample.csv"
+# base directories
+data_dir = Path(__file__).parent.parent / "data"
+# ensure data folder exists
+data_dir.mkdir(parents=True, exist_ok=True)
+
+JSON_FILE = data_dir / "transit_agencies_sample.json"
+CSV_FILE = data_dir / "transit_agencies_sample.csv"
 
 def create_sample_data():
     """Create sample transit agencies data"""

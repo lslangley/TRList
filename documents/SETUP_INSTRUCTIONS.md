@@ -32,7 +32,7 @@
 
 The project is located at:
 ```
-c:\Users\leslie.langley\OneDrive - Transpo Group\Repos\Transit_Royal
+c:\Users\leslie.langley\OneDrive - Transpo Group\Repos\TRList
 ```
 
 ### Step 3: Install Python Packages
@@ -40,7 +40,7 @@ c:\Users\leslie.langley\OneDrive - Transpo Group\Repos\Transit_Royal
 1. **Open Command Prompt or PowerShell**
    - Navigate to project directory:
      ```
-     cd "c:\Users\leslie.langley\OneDrive - Transpo Group\Repos\Transit_Royal"
+     cd "c:\Users\leslie.langley\OneDrive - Transpo Group\Repos\TRList"
      ```
 
 2. **Run the setup:**
@@ -63,20 +63,25 @@ c:\Users\leslie.langley\OneDrive - Transpo Group\Repos\Transit_Royal
 
 1. **Open Command Prompt in the project directory**
 
-2. **Run the scraper:**
+2. **Change into the scripts folder:**
+   ```
+   cd scripts
+   ```
+
+3. **Run the scraper:**
    ```
    python scraper.py
    ```
-   - This creates `transit_agencies.csv` and `transit_agencies.json`
-   - Check `scrape_log.txt` for detailed logs
+   - Output files will be saved under `../data/` (CSV/JSON)
+   - Check `../logs/scrape_log.txt` for detailed logs
 
-3. **Generate the dashboard:**
+4. **Generate the dashboard:**
    ```
    python dashboard.py
    ```
-   - This creates `index.html`
+   - This writes `index.html` to the repository root
 
-4. **View the dashboard:**
+5. **View the dashboard:**
    - Open `index.html` in your web browser
    - Use the search and filter features to explore agencies
 
@@ -163,7 +168,7 @@ python scheduler.py
 ```
 
 ### View Dashboard
-1. Open `index.html` in a web browser
+1. Open `index.html` in a web browser (located at repo root)
 2. Use the search box to find agencies
 3. Click on country headers to expand/collapse sections
 4. Use the country dropdown to filter
@@ -176,7 +181,7 @@ After running the scraper, you'll have:
 |------|-------------|
 | `transit_agencies.csv` | Comma-separated values with agency data |
 | `transit_agencies.json` | JSON format for programmatic access |
-| `index.html` | Interactive web dashboard |
+| `index.html` | Interactive web dashboard (located at project root) |
 | `scrape_log.txt` | Scraper execution logs |
 | `scheduler_log.txt` | Scheduler execution logs |
 

@@ -8,10 +8,16 @@ from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
 
-SCRIPT_DIR = Path(__file__).parent
-JSON_FILE = SCRIPT_DIR / "transit_agencies.json"
-CSV_FILE = SCRIPT_DIR / "transit_agencies.csv"
-HTML_OUTPUT = SCRIPT_DIR / "index.html"
+# locate base and data folders
+BASE_DIR = Path(__file__).parent.parent
+DATA_DIR = BASE_DIR / "data"
+
+# ensure output directory exists
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+JSON_FILE = DATA_DIR / "transit_agencies.json"
+CSV_FILE = DATA_DIR / "transit_agencies.csv"
+HTML_OUTPUT = BASE_DIR / "index.html"  # dashboard now lives at repo root
 
 def read_json_data():
     """Read the JSON data file"""

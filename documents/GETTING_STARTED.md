@@ -1,5 +1,7 @@
 # Getting Started - Transit App Royale Scraper
 
+> **Repository layout updated:** scripts live in `scripts/`, documentation in `documents/`, outputs go to `data/`, and logs are under `logs/`.
+
 Your scraper is now ready! Here's a quick guide to get you up and running.
 
 ## 📋 What You Have

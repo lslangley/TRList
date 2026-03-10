@@ -8,9 +8,11 @@ import subprocess
 from pathlib import Path
 import time
 
-SCRIPT_DIR = Path(__file__).parent
-SCRAPER_SCRIPT = SCRIPT_DIR / "scraper.py"
-DASHBOARD_SCRIPT = SCRIPT_DIR / "dashboard.py"
+SCRIPTS_DIR = Path(__file__).parent
+BASE_DIR = SCRIPTS_DIR.parent
+
+SCRAPER_SCRIPT = SCRIPTS_DIR / "scraper.py"
+DASHBOARD_SCRIPT = SCRIPTS_DIR / "dashboard.py"
 
 def test_imports():
     """Test that all required modules can be imported"""
@@ -62,8 +64,8 @@ def test_scraper():
             print("✓ Scraper executed successfully")
             
             # Check if output files were created
-            csv_file = SCRIPT_DIR / "transit_agencies.csv"
-            json_file = SCRIPT_DIR / "transit_agencies.json"
+            csv_file = BASE_DIR / "data" / "transit_agencies.csv"
+            json_file = BASE_DIR / "data" / "transit_agencies.json"
             
             if csv_file.exists():
                 size = csv_file.stat().st_size
@@ -116,7 +118,7 @@ def test_dashboard():
             print("✓ Dashboard generator executed successfully")
             
             # Check if HTML file was created
-            html_file = SCRIPT_DIR / "index.html"
+            html_file = BASE_DIR / "index.html"
             
             if html_file.exists():
                 size = html_file.stat().st_size
@@ -151,7 +153,7 @@ def test_logs():
     print("=" * 60)
     print()
     
-    log_file = SCRIPT_DIR / "scrape_log.txt"
+    log_file = BASE_DIR / "logs" / "scrape_log.txt"
     
     if log_file.exists():
         print(f"✓ Log file exists: {log_file}")
